@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TextInput,
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const API_URL = "http://192.168.1.4:8080/api/recipes";
 
@@ -55,12 +56,21 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <TextInput
-        style={styles.search}
-        placeholder="Search recipes..."
-        value={search}
-        onChangeText={handleSearch}
-      />
+      <View style={styles.searchContainer}>
+        <Ionicons
+          name="search"
+          size={20}
+          color="#888"
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search recipes..."
+          value={search}
+          onChangeText={handleSearch}
+          placeholderTextColor="#999"
+        />
+      </View>
       <FlatList
         data={filtered}
         keyExtractor={(item, index) => index.toString()}
@@ -75,13 +85,27 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
-  search: {
-    height: 45,
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     margin: 12,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    backgroundColor: "#f0f0f0",
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    elevation: 4, // Android
+    shadowColor: "#000", // iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    height: 45,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
     fontSize: 16,
+    color: "#333",
   },
   card: {
     backgroundColor: "#fff",
