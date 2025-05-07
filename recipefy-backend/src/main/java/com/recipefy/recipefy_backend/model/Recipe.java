@@ -1,13 +1,10 @@
 package com.recipefy.recipefy_backend.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
 
-@Getter
 @Entity
 public class Recipe {
 
-    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -15,6 +12,12 @@ public class Recipe {
     private String title;
     private String description;
     private String imageUrl;
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getImageUrl() { return imageUrl; }
 
     public void setId(int id) { this.id = id; }
     public void setTitle(String title) { this.title = title; }

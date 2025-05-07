@@ -1,12 +1,9 @@
 package com.recipefy.recipefy_backend.dto;
 
 import com.recipefy.recipefy_backend.model.Recipe;
-import lombok.Getter;
 
-@Getter
 public class RecipeDto {
 
-    // Getters
     private String title;
     private String description;
     private String imageUrl;
@@ -17,4 +14,8 @@ public class RecipeDto {
         this.imageUrl = recipe.getImageUrl();
     }
 
+    // Getters
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getImageUrl() { return imageUrl; }
 }
