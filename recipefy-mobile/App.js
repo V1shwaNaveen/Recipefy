@@ -30,11 +30,11 @@ export default function App() {
             else if (route.name === "Account")
               iconName = focused ? "person" : "person-outline";
 
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return <Ionicons name={iconName} size={size - 5} color={color} />;
           },
-          tabBarShowLabel: false,
+          tabBarShowLabel: true,
           tabBarStyle: {
-            paddingTop: 5,
+            paddingTop: 2,
             height: 88,
             borderTopLeftRadius: 0,
             borderTopRightRadius: 0,
@@ -44,7 +44,7 @@ export default function App() {
           tabBarLabelStyle: {
             fontSize: 12,
           },
-          tabBarActiveTintColor: "#1e90ff",
+          tabBarActiveTintColor: "#fffff",
           tabBarInactiveTintColor: "#aaa",
         })}
       >
