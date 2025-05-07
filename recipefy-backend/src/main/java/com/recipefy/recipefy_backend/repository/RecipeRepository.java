@@ -1,7 +1,7 @@
 // RecipeRepository.java
-package com.recipefy.recipefy_backend.Repository;
+package com.recipefy.recipefy_backend.repository;
 
-import com.recipefy.recipefy_backend.Model.Recipe;
+import com.recipefy.recipefy_backend.model.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
