@@ -6,12 +6,15 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 
-const API_URL = "http://192.168.1.4:8080/api/recipes"; // replace with your IP
+const API_URL = "http://192.168.1.4:8080/api/recipes";
 
-const HomeScreen = () => {
+export default function HomeScreen() {
   const [recipes, setRecipes] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,11 +26,20 @@ const HomeScreen = () => {
       const response = await fetch(API_URL);
       const data = await response.json();
       setRecipes(data);
+      setFiltered(data);
     } catch (error) {
       console.error("Error fetching recipes:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = (text) => {
+    setSearch(text);
+    const filteredData = recipes.filter((item) =>
+      item.title.toLowerCase().includes(text.toLowerCase())
+    );
+    setFiltered(filteredData);
   };
 
   const renderRecipe = ({ item }) => (
@@ -42,24 +54,40 @@ const HomeScreen = () => {
     return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
 
   return (
-    <FlatList
-      data={recipes}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={renderRecipe}
-      contentContainerStyle={styles.container}
-    />
+    <View style={{ flex: 1 }}>
+      <TextInput
+        style={styles.search}
+        placeholder="Search recipes..."
+        value={search}
+        onChangeText={handleSearch}
+      />
+      <FlatList
+        data={filtered}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderRecipe}
+        contentContainerStyle={styles.container}
+      />
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
+  search: {
+    height: 45,
+    margin: 12,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    backgroundColor: "#f0f0f0",
+    fontSize: 16,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    marginBottom: 16,
     padding: 16,
+    marginBottom: 16,
     elevation: 4,
   },
   image: {
@@ -77,5 +105,3 @@ const styles = StyleSheet.create({
     color: "#555",
   },
 });
-
-export default HomeScreen;

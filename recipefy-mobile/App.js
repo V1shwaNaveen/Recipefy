@@ -34,11 +34,15 @@ export default function App() {
           },
           tabBarShowLabel: false,
           tabBarStyle: {
-            height: 60,
-            borderTopLeftRadius: 15,
-            borderTopRightRadius: 15,
+            paddingTop: 5,
+            height: 88,
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
             backgroundColor: "#fff",
             elevation: 10,
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
           },
           tabBarActiveTintColor: "#1e90ff",
           tabBarInactiveTintColor: "#aaa",
@@ -46,22 +50,7 @@ export default function App() {
       >
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Explore" component={ExploreScreen} />
-        <Tab.Screen
-          name="Add"
-          component={AddRecipeScreen}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name="add-circle"
-                size={focused ? 60 : 50}
-                color="#1e90ff"
-                style={{
-                  marginBottom: 20,
-                }}
-              />
-            ),
-          }}
-        />
+        <Tab.Screen name="Add" component={AddRecipeScreen} />
         <Tab.Screen name="List" component={ShoppingListScreen} />
         <Tab.Screen name="Account" component={AccountScreen} />
       </Tab.Navigator>
