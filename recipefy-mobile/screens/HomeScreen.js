@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import {
   View,
   Text,
@@ -10,7 +12,7 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const API_URL = "http://192.168.1.4:8080/api/recipes";
+const API_URL = "http://192.168.1.5:8080/api/recipes";
 
 export default function HomeScreen() {
   const [recipes, setRecipes] = useState([]);
@@ -46,8 +48,7 @@ export default function HomeScreen() {
   const renderRecipe = ({ item }) => (
     <View style={styles.card}>
       <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description}>{item.description}</Text>
+      <Text style={styles.items}>{item.title}</Text>
     </View>
   );
 
@@ -55,7 +56,7 @@ export default function HomeScreen() {
     return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -71,12 +72,19 @@ export default function HomeScreen() {
           placeholderTextColor="#999"
         />
       </View>
-      <FlatList
-        data={filtered}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderRecipe}
-        contentContainerStyle={styles.container}
-      />
+
+      <Text style={styles.sectionTitle}>Latest Recipes</Text>
+
+      <View style={styles.horizontalListWrapper}>
+        <FlatList
+          data={filtered}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderRecipe}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalList}
+        />
+      </View>
     </View>
   );
 }
@@ -90,6 +98,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     margin: 12,
+    marginTop: 20,
+    marginBottom: 20,
     paddingHorizontal: 12,
     borderRadius: 12,
     elevation: 4, // Android
@@ -107,15 +117,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
+  horizontalListWrapper: {
+    height: 220, // Limit the height of the card area
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginLeft: 19,
+    marginBottom: 10,
+    marginTop: 4,
+  },
+  horizontalList: {
+    paddingLeft: 16,
+    paddingRight: 8,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: 0,
+    marginRight: 12,
+    marginTop: 10,
+    width: 250,
     elevation: 4,
   },
+
   image: {
-    height: 150,
+    height: 130,
     borderRadius: 8,
     marginBottom: 12,
   },
@@ -127,5 +154,11 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 14,
     color: "#555",
+  },
+  items: {
+    fontSize: 18,
+    paddingLeft: 3,
+    fontWeight: "450",
+    marginBottom: 6,
   },
 });

@@ -22,7 +22,7 @@ export default function App() {
             if (route.name === "Home")
               iconName = focused ? "home" : "home-outline";
             else if (route.name === "Explore")
-              iconName = focused ? "search" : "search-outline";
+              iconName = focused ? "rocket" : "rocket-outline";
             else if (route.name === "Add")
               iconName = focused ? "add-circle" : "add-circle-outline";
             else if (route.name === "List")
