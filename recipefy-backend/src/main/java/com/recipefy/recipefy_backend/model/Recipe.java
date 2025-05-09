@@ -17,6 +17,7 @@ public class Recipe {
     private float rating;
     private int voteCount;
     private int cookTime;
+    private int calories;
 
     @ElementCollection
     private List<String> ingredients;
@@ -37,6 +38,10 @@ public class Recipe {
 
     public int getVoteCount() {
         return voteCount;
+    }
+
+    public int getCalories() {
+        return calories;
     }
 
     public List<String> getIngredients() { return ingredients; }
@@ -60,5 +65,9 @@ public class Recipe {
 
     public void setVoteCount(int voteCount) {
         this.voteCount = voteCount;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
     }
 }

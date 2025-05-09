@@ -15,6 +15,7 @@ public class RecipeDto {
     private int cookTime;
     private List<String> ingredients;
     private List<String> steps;
+    private int calories;
 
     public RecipeDto() {} // Required for POST deserialization
 
@@ -27,6 +28,7 @@ public class RecipeDto {
         this.voteCount = recipe.getVoteCount();
         this.ingredients = recipe.getIngredients();
         this.steps = recipe.getSteps();
+        this.calories = recipe.getCalories();
     }
 
     // Getters
@@ -50,4 +52,5 @@ public class RecipeDto {
     public List<String> getSteps() {
         return steps;
     }
+    public int getCalories(){return calories;}
 }
