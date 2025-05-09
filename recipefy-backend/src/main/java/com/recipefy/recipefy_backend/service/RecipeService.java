@@ -23,4 +23,20 @@ public class RecipeService {
                 .map(RecipeDto::new)
                 .collect(Collectors.toList());
     }
+
+    public RecipeDto addRecipe(RecipeDto dto) {
+        Recipe recipe = new Recipe();
+        recipe.setTitle(dto.getTitle());
+        recipe.setDescription(dto.getDescription());
+        recipe.setImageUrl(dto.getImageUrl());
+        recipe.setRating(dto.getRating());
+        recipe.setVoteCount(dto.getVoteCount());
+        recipe.setCookTime(dto.getCookTime());
+        recipe.setIngredients(dto.getIngredients());
+        recipe.setSteps(dto.getSteps());
+
+        Recipe saved = repo.save(recipe);
+        return new RecipeDto(saved);
+    }
+
 }

@@ -21,4 +21,10 @@ public class RecipeController {
     public List<RecipeDto> getAllRecipes() {
         return service.getAllRecipes();
     }
+
+    @PostMapping
+    public RecipeDto addRecipe(@RequestBody RecipeDto dto) {
+        return service.addRecipe(dto);
+    }
+
 }

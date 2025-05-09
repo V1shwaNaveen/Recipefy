@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native";
 
 import {
   View,
@@ -12,7 +13,7 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const API_URL = "http://192.168.1.5:8080/api/recipes";
+const API_URL = "http://192.168.1.3:8080/api/recipes";
 
 export default function HomeScreen() {
   const [recipes, setRecipes] = useState([]);
@@ -49,6 +50,26 @@ export default function HomeScreen() {
     <View style={styles.card}>
       <Image source={{ uri: item.imageUrl }} style={styles.image} />
       <Text style={styles.items}>{item.title}</Text>
+
+      <View style={styles.ratingRow}>
+        <Ionicons
+          name="star"
+          size={16}
+          color="#f5a623"
+          style={{ marginRight: 4 }}
+        />
+        <Text style={styles.ratingText}>
+          {item.rating.toFixed(1)} ({item.voteCount})
+        </Text>
+
+        <Ionicons
+          name="time-outline"
+          size={16}
+          color="#666"
+          style={{ marginLeft: 12, marginRight: 4 }}
+        />
+        <Text style={styles.ratingText}>{item.cookTime} min</Text>
+      </View>
     </View>
   );
 
@@ -56,7 +77,7 @@ export default function HomeScreen() {
     return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.searchContainer}>
         <Ionicons
           name="search"
@@ -72,9 +93,7 @@ export default function HomeScreen() {
           placeholderTextColor="#999"
         />
       </View>
-
       <Text style={styles.sectionTitle}>Latest Recipes</Text>
-
       <View style={styles.horizontalListWrapper}>
         <FlatList
           data={filtered}
@@ -85,7 +104,27 @@ export default function HomeScreen() {
           contentContainerStyle={styles.horizontalList}
         />
       </View>
-    </View>
+      <Text style={styles.sectionTitle}>Highest Rated</Text>
+      <FlatList
+        data={[...filtered].sort((a, b) => b.rating - a.rating)}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderRecipe}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.horizontalList}
+      />
+      <Text style={styles.sectionTitle}>All Recipes</Text>
+      <View style={styles.horizontalListWrapper}>
+        <FlatList
+          data={filtered}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderRecipe}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalList}
+        />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -160,5 +199,15 @@ const styles = StyleSheet.create({
     paddingLeft: 3,
     fontWeight: "450",
     marginBottom: 6,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 4,
+    marginBottom: 8,
+  },
+  ratingText: {
+    fontSize: 14,
+    color: "#555",
   },
 });
