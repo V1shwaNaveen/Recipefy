@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native";
 
 import {
   View,
@@ -45,32 +47,36 @@ export default function HomeScreen() {
     );
     setFiltered(filteredData);
   };
-
+  const navigation = useNavigation();
   const renderRecipe = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      <Text style={styles.items}>{item.title}</Text>
+    <TouchableOpacity
+      onPress={() => navigation.navigate("RecipeDetail", { recipe: item })}
+    >
+      <View style={styles.card}>
+        <Image source={{ uri: item.imageUrl }} style={styles.image} />
+        <Text style={styles.items}>{item.title}</Text>
 
-      <View style={styles.ratingRow}>
-        <Ionicons
-          name="star"
-          size={16}
-          color="#f5a623"
-          style={{ marginRight: 4 }}
-        />
-        <Text style={styles.ratingText}>
-          {item.rating.toFixed(1)} ({item.voteCount})
-        </Text>
+        <View style={styles.ratingRow}>
+          <Ionicons
+            name="star"
+            size={16}
+            color="#f5a623"
+            style={{ marginRight: 4 }}
+          />
+          <Text style={styles.ratingText}>
+            {item.rating.toFixed(1)} ({item.voteCount})
+          </Text>
 
-        <Ionicons
-          name="time-outline"
-          size={16}
-          color="#666"
-          style={{ marginLeft: 12, marginRight: 4 }}
-        />
-        <Text style={styles.ratingText}>{item.cookTime} min</Text>
+          <Ionicons
+            name="time-outline"
+            size={16}
+            color="#666"
+            style={{ marginLeft: 12, marginRight: 4 }}
+          />
+          <Text style={styles.ratingText}>{item.cookTime} min</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading)

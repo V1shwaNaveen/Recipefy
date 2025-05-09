@@ -27,4 +27,12 @@ public class RecipeController {
         return service.addRecipe(dto);
     }
 
+    @GetMapping("/filter")
+    public List<RecipeDto> getRecipesByCalories(
+            @RequestParam int minCalories,
+            @RequestParam int maxCalories
+    ) {
+        return service.getRecipesByCalories(minCalories, maxCalories);
+    }
+
 }

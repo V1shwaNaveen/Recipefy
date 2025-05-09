@@ -3,13 +3,35 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { TouchableOpacity } from "react-native";
+
 import HomeScreen from "./screens/homescreen";
 import ExploreScreen from "./screens/explorescreen";
 import AddRecipeScreen from "./screens/addRecipeScreen";
 import ShoppingListScreen from "./screens/shoppingListScreen";
 import AccountScreen from "./screens/accountScreen";
+import RecipeDetailScreen from "./screens/RecipeDetailScreen";
 
 const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="RecipeDetail"
+        component={RecipeDetailScreen}
+        options={{ title: "Recipe Details" }}
+      />
+    </HomeStack.Navigator>
+  );
+}
 
 export default function App() {
   return (
@@ -48,7 +70,7 @@ export default function App() {
           tabBarInactiveTintColor: "#aaa",
         })}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Explore" component={ExploreScreen} />
         <Tab.Screen name="Add" component={AddRecipeScreen} />
         <Tab.Screen name="List" component={ShoppingListScreen} />

@@ -38,5 +38,9 @@ public class RecipeService {
         Recipe saved = repo.save(recipe);
         return new RecipeDto(saved);
     }
+    public List<RecipeDto> getRecipesByCalories(int minCalories, int maxCalories) {
+        List<Recipe> recipes = repo.findByCaloriesBetween(minCalories, maxCalories);
+        return recipes.stream().map(RecipeDto::new).collect(Collectors.toList());
+    }
 
 }
