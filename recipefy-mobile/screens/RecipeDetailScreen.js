@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,43 @@ import {
   StyleSheet,
   Image,
   FlatList,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function RecipeDetailScreen({ route }) {
   const { recipe } = route.params;
+  const [userId] = useState(1); // Now properly imported
+  const API_URL = "http://192.168.1.4:8080/api/shopping-list/bulk";
+
+  const addToShoppingList = async () => {
+    const items = recipe.ingredients.map((ingredient) => ({
+      name: ingredient,
+      category: "Groceries", // You can parse categories from ingredients
+      purchased: false,
+      userId: userId,
+    }));
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(items),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "Ingredients added to shopping list!");
+      } else {
+        Alert.alert("Error", "Failed to add to shopping list");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Alert.alert("Error", "Something went wrong");
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -78,6 +110,15 @@ export default function RecipeDetailScreen({ route }) {
           scrollEnabled={false}
         />
       </View>
+
+      {/* Add to Shopping List Button */}
+      <TouchableOpacity
+        style={styles.addToListButton}
+        onPress={addToShoppingList}
+      >
+        <Ionicons name="cart-outline" size={20} color="white" />
+        <Text style={styles.addToListButtonText}>Add to Shopping List</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -101,6 +142,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 15,
     color: "#333",
+  },
+  addToListButton: {
+    flexDirection: "row",
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 20,
+  },
+  addToListButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
   metaContainer: {
     flexDirection: "row",
