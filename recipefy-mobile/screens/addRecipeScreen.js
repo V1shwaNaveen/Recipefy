@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 
 export default function AddRecipeScreen() {
@@ -16,8 +17,12 @@ export default function AddRecipeScreen() {
   const [cookTime, setCookTime] = useState("");
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
+  const [calories, setCalories] = useState(0);
+  const [isCalculating, setIsCalculating] = useState(false);
 
-  const API_URL = "http://192.168.1.4:8080/api/recipes"; // Adjust to match backend
+  const API_URL = "http://192.168.1.4:8080/api/recipes";
+  const NUTRITION_API_URL =
+    "http://192.168.1.4:8080/api/recipes/estimate-calories";
 
   const handleAddField = (type) => {
     if (type === "ingredient") {
@@ -33,14 +38,50 @@ export default function AddRecipeScreen() {
     type === "ingredient" ? setIngredients(list) : setSteps(list);
   };
 
+  // Calculate calories whenever ingredients change
+  useEffect(() => {
+    const calculateCalories = async () => {
+      const nonEmptyIngredients = ingredients.filter(
+        (ing) => ing.trim() !== ""
+      );
+      if (nonEmptyIngredients.length > 0) {
+        setIsCalculating(true);
+        try {
+          const response = await fetch(NUTRITION_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ingredients: nonEmptyIngredients }),
+          });
+          const data = await response.json();
+          setCalories(data.calories || 0);
+        } catch (error) {
+          console.error("Calorie calculation error:", error);
+          setCalories(0);
+        } finally {
+          setIsCalculating(false);
+        }
+      } else {
+        setCalories(0);
+      }
+    };
+
+    // Add debounce to avoid too many API calls
+    const timer = setTimeout(() => {
+      calculateCalories();
+    }, 500); // 0.5 second delay
+
+    return () => clearTimeout(timer);
+  }, [ingredients]);
+
   const handleSubmit = async () => {
     const recipe = {
       title,
       description,
       imageUrl,
-      cookTime: parseInt(cookTime),
-      ingredients,
-      steps,
+      cookTime: parseInt(cookTime) || 0,
+      ingredients: ingredients.filter((i) => i.trim() !== ""),
+      steps: steps.filter((s) => s.trim() !== ""),
+      calories, // Send the calculated calories
     };
 
     try {
@@ -51,13 +92,14 @@ export default function AddRecipeScreen() {
       });
 
       if (res.ok) {
-        alert("Recipe added successfully!");
+        alert(`Recipe added successfully! (${calories} calories)`);
         setTitle("");
         setDescription("");
         setImageUrl("");
         setCookTime("");
         setIngredients([""]);
         setSteps([""]);
+        setCalories(0);
       } else {
         alert("Failed to add recipe");
       }
@@ -70,7 +112,12 @@ export default function AddRecipeScreen() {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.label}>Title</Text>
-      <TextInput value={title} onChangeText={setTitle} style={styles.input} />
+      <TextInput
+        value={title}
+        onChangeText={setTitle}
+        style={styles.input}
+        placeholder="Recipe name"
+      />
 
       <Text style={styles.label}>Description</Text>
       <TextInput
@@ -78,6 +125,7 @@ export default function AddRecipeScreen() {
         onChangeText={setDescription}
         style={[styles.input, { height: 80 }]}
         multiline
+        placeholder="Brief description of the recipe"
       />
 
       <Text style={styles.label}>Image URL</Text>
@@ -85,6 +133,7 @@ export default function AddRecipeScreen() {
         value={imageUrl}
         onChangeText={setImageUrl}
         style={styles.input}
+        placeholder="https://example.com/image.jpg"
       />
 
       <Text style={styles.label}>Cook Time (minutes)</Text>
@@ -93,6 +142,7 @@ export default function AddRecipeScreen() {
         onChangeText={setCookTime}
         style={styles.input}
         keyboardType="numeric"
+        placeholder="30"
       />
 
       <Text style={styles.label}>Ingredients</Text>
@@ -102,12 +152,22 @@ export default function AddRecipeScreen() {
           value={ingredient}
           onChangeText={(text) => handleChangeField("ingredient", idx, text)}
           style={styles.input}
-          placeholder={`Ingredient ${idx + 1}`}
+          placeholder={`e.g., 1 cup rice, 200g chicken`}
         />
       ))}
       <TouchableOpacity onPress={() => handleAddField("ingredient")}>
         <Text style={styles.addMore}>+ Add Ingredient</Text>
       </TouchableOpacity>
+
+      {/* Calorie display */}
+      <View style={styles.calorieContainer}>
+        <Text style={styles.calorieLabel}>Estimated Calories:</Text>
+        {isCalculating ? (
+          <ActivityIndicator size="small" color="#4CAF50" />
+        ) : (
+          <Text style={styles.calorieValue}>{calories}</Text>
+        )}
+      </View>
 
       <Text style={styles.label}>Steps</Text>
       {steps.map((step, idx) => (
@@ -125,7 +185,11 @@ export default function AddRecipeScreen() {
       </TouchableOpacity>
 
       <View style={styles.submitButton}>
-        <Button title="Add Recipe" onPress={handleSubmit} />
+        <Button
+          title="Add Recipe"
+          onPress={handleSubmit}
+          disabled={isCalculating}
+        />
       </View>
     </ScrollView>
   );
@@ -149,6 +213,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     backgroundColor: "#fafafa",
+    marginBottom: 8,
   },
   addMore: {
     color: "#007bff",
@@ -157,5 +222,24 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 24,
+    marginBottom: 40,
+  },
+  calorieContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 12,
+    padding: 10,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+  },
+  calorieLabel: {
+    fontWeight: "bold",
+    marginRight: 8,
+    fontSize: 16,
+  },
+  calorieValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4CAF50",
   },
 });

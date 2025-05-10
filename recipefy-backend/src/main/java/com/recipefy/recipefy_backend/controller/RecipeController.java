@@ -1,10 +1,13 @@
 package com.recipefy.recipefy_backend.controller;
 
 import com.recipefy.recipefy_backend.dto.RecipeDto;
+import com.recipefy.recipefy_backend.service.NutritionService;
 import com.recipefy.recipefy_backend.service.RecipeService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -13,8 +16,9 @@ public class RecipeController {
 
     private final RecipeService service;
 
-    public RecipeController(RecipeService service) {
+    public RecipeController(RecipeService service, NutritionService nutritionService) {
         this.service = service;
+        this.nutritionService = nutritionService;
     }
 
     @GetMapping
@@ -34,5 +38,10 @@ public class RecipeController {
     ) {
         return service.getRecipesByCalories(minCalories, maxCalories);
     }
-
+    private final NutritionService nutritionService;
+    @PostMapping("/estimate-calories")
+    public Map<String, Integer> estimateCalories(@RequestBody Map<String, List<String>> request) {
+        int calories = nutritionService.calculateCalories(request.get("ingredients"));
+        return Collections.singletonMap("calories", calories);
+    }
 }
