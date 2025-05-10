@@ -17,7 +17,7 @@ export default function AddRecipeScreen() {
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
 
-  const API_URL = "http://192.168.1.3:8080/api/recipes"; // Adjust to match backend
+  const API_URL = "http://192.168.1.4:8080/api/recipes"; // Adjust to match backend
 
   const handleAddField = (type) => {
     if (type === "ingredient") {

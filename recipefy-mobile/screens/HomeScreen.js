@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const API_URL = "http://192.168.1.3:8080/api/recipes";
+const API_URL = "http://192.168.1.4:8080/api/recipes";
 
 export default function HomeScreen() {
   const [recipes, setRecipes] = useState([]);

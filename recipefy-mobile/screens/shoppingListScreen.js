@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const API_URL = "http://192.168.1.3:8080/api/shopping-list";
+const API_URL = "http://192.168.1.4:8080/api/shopping-list";
 
 export default function ShoppingListScreen() {
   const [items, setItems] = useState([]);
