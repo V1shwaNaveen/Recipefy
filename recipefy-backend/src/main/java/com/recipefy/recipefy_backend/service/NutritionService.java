@@ -29,30 +29,32 @@ public class NutritionService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-app-id", appId);
         headers.set("x-app-key", appKey);
-        headers.set("x-remote-user-id", "0"); // Required by Nutritionix
+        headers.set("x-remote-user-id", "0");
 
-        // Prepare request body
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("query", query);
-
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(
+                Map.of("query", query),
+                headers
+        );
 
         try {
-            // Make API call
             ResponseEntity<Map> response = restTemplate.exchange(
-                    apiUrl,
-                    HttpMethod.POST,
-                    request,
-                    Map.class
-            );
+                    apiUrl, HttpMethod.POST, request, Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
                 List<Map<String, Object>> foods = (List<Map<String, Object>>) body.get("foods");
 
-                // Sum calories from all foods
+                // Safely sum calories from all foods
                 double totalCalories = foods.stream()
-                        .mapToDouble(food -> (double) food.get("nf_calories"))
+                        .mapToDouble(food -> {
+                            try {
+                                // Handle both Integer and Double values
+                                Number calories = (Number) food.get("nf_calories");
+                                return calories != null ? calories.doubleValue() : 0;
+                            } catch (Exception e) {
+                                return 0; // Skip this ingredient if parsing fails
+                            }
+                        })
                         .sum();
 
                 return (int) Math.round(totalCalories);
@@ -61,6 +63,47 @@ public class NutritionService {
             e.printStackTrace();
         }
 
-        return 0; // Default if API fails
+        // Fallback: Calculate what we can from individual ingredients
+        return calculateFallbackCalories(ingredients);
+    }
+
+    private int calculateFallbackCalories(List<String> ingredients) {
+        // Try to calculate calories for each ingredient individually
+        int total = 0;
+
+        for (String ingredient : ingredients) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.set("x-app-id", appId);
+                headers.set("x-app-key", appKey);
+                headers.set("x-remote-user-id", "0");
+
+                HttpEntity<Map<String, String>> request = new HttpEntity<>(
+                        Map.of("query", ingredient),
+                        headers
+                );
+
+                ResponseEntity<Map> response = restTemplate.exchange(
+                        apiUrl, HttpMethod.POST, request, Map.class);
+
+                if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                    Map<String, Object> body = response.getBody();
+                    List<Map<String, Object>> foods = (List<Map<String, Object>>) body.get("foods");
+
+                    if (foods != null && !foods.isEmpty()) {
+                        Number calories = (Number) foods.get(0).get("nf_calories");
+                        if (calories != null) {
+                            total += calories.intValue();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Skip this ingredient if there's an error
+                continue;
+            }
+        }
+
+        return total;
     }
 }
